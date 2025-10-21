@@ -20,27 +20,28 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Prepare environment
+      # This step can stay as-is, it uses PowerShell (default)
       run: |
        choco install git wget openssl python -y
 
     - name: Fetch image from URL
-      # Use bash shell for Linux commands
-      shell: bash
+      # Use the full path to bash
+      shell: "C:\\Program Files\\Git\\bin\\bash.exe"
       run: |
         echo "Downloading recovery image..."
         wget "${{ github.event.inputs.RECOVERY_URL || env.RECOVERY_URL }}" -O recovery.img
         ls -lh recovery.img
 
     - name: Patch Process 1
-      # Use bash shell for Linux commands
-      shell: bash
+      # Use the full path to bash
+      shell: "C:\\Program Files\\Git\\bin\\bash.exe"
       run: |
         chmod +x magiskboot script1.sh || true
         ./script1.sh || true
 
     - name: Patch Process 2
-      # Use bash shell for Linux commands
-      shell: bash
+      # Use the full path to bash
+      shell: "C:\\Program Files\\Git\\bin\\bash.exe"
       run: |
         chmod +x script2.sh || true
         ./script2.sh || true
@@ -50,7 +51,7 @@ jobs:
           --partition_size $(wc -c < recovery.img) \
           --image recovery-patched.img \
           --key phh.pem \
-          --algorithm SHA256_RSA406
+          --algorithm SHA256_RSA4096
 
         mkdir -p output
         mv recovery-patched.img output/recovery.img
