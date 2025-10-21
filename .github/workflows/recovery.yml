@@ -6,63 +6,49 @@ on:
       RECOVERY_URL:
         description: 'RECOVERY URL'
         required: true
-        default: 'http://tmpfiles.org/dl/4848702/recovery.img'
+        default: 'https://transfer.sh/(RECOMMENDED)'
 
 env:
   RECOVERY_URL: https://oshi.at/Rpjg
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - name: Check Out
+      uses: actions/checkout@main
 
-    - name: Prepare environment
-      # This step correctly uses the default PowerShell
+    - name: Prepare the environment
       run: |
-       choco install git wget openssl python -y
+        sudo apt install git wget lz4 tar openssl python3 -y
 
     - name: Fetch image from URL
-      # Use 'sh' to handle Windows-to-bash path conversion
-      shell: sh
       run: |
-        echo "Downloading recovery image..."
-        wget "${{ github.event.inputs.RECOVERY_URL || env.RECOVERY_URL }}" -O recovery.img
-        ls -lh recovery.img
+        ls
+        pwd
+        wget ${{github.event.inputs.RECOVERY_URL }} -O recovery.img
 
-    - name: Patch Process 1
-      # Use 'sh' to handle Windows-to-bash path conversion
-      shell: sh
+    - name: Patch Process-1
       run: |
-        chmod +x magiskboot script1.sh || true
+        chmod a+x script1.sh
+        chmod a+x magiskboot
         ./script1.sh || true
 
-    - name: Patch Process 2
-      # Use 'sh' to handle Windows-to-bash path conversion
-      shell: sh
+    - name: Patch Process-2
       run: |
-        chmod +x script2.sh || true
+        chmod a+x script2.sh
         ./script2.sh || true
         python3 avbtool extract_public_key --key phh.pem --output phh.pub.bin
-        python3 avbtool add_hash_footer \
-          --partition_name recovery \
-          --partition_size $(wc -c < recovery.img) \
-          --image recovery-patched.img \
-          --key phh.pem \
-          --algorithm SHA256_RSA4096
-
-        mkdir -p output
-        mv recovery-patched.img output/recovery.img
-        cd output
-        tar -cf fastbootd-recovery.tar recovery.img
+        python3 avbtool add_hash_footer --partition_name recovery --partition_size $(wc -c recovery.img |cut -f 1 -d ' ') --image recovery-patched.img --key phh.pem --algorithm SHA256_RSA4096
+        mkdir output && cd output
+        mv ../recovery-patched.img recovery.img
+        tar cvf fastbootd-recovery.tar recovery.img
         md5sum -t fastbootd-recovery.tar >> fastbootd-recovery.tar
         mv fastbootd-recovery.tar fastbootd-recovery.tar.md5
-        cd ..
 
-    - name: Upload Recovery Artifact
-      uses: actions/upload-artifact@v4
+    - name: Upload Recovery
+      uses: actions/upload-artifact@v3.0.0
       with:
+        path: /home/runner/work/Patch-Recovery/Patch-Recovery/output/*.md5
         name: Patched-Recovery
-        path: output/*.md5
