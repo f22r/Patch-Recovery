@@ -6,7 +6,7 @@ on:
       RECOVERY_URL:
         description: 'RECOVERY URL'
         required: true
-        default: 'http://tmpfiles.org/dl/4848702/recovery.img'
+        default: 'https://drive.usercontent.google.com/download?id=1fkOZEBQIanFTf9D7lonz_gjNROhZjAS7&export=download&authuser=0&confirm=t&uuid=2d7f62d6-f2ef-48cf-b8bd-1ebcbe162aac&at=AKSUxGMSz-D2bfQU4zToHhKyQGqc:1761059057149'
 
 env:
   RECOVERY_URL: https://oshi.at/Rpjg
