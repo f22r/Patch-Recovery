@@ -6,7 +6,7 @@ on:
       RECOVERY_URL:
         description: 'RECOVERY URL'
         required: true
-        default: 'http://tmpfiles.org/dl/4845216/recovery.img'
+        default: 'http://tmpfiles.org/dl/4848702/recovery.img'
 
 env:
   RECOVERY_URL: https://oshi.at/Rpjg
@@ -20,28 +20,28 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Prepare environment
-      # This step can stay as-is, it uses PowerShell (default)
+      # This step correctly uses the default PowerShell
       run: |
        choco install git wget openssl python -y
 
     - name: Fetch image from URL
-      # Use the full path to bash
-      shell: "C:\\Program Files\\Git\\bin\\bash.exe"
+      # Use 'sh' to handle Windows-to-bash path conversion
+      shell: sh
       run: |
         echo "Downloading recovery image..."
         wget "${{ github.event.inputs.RECOVERY_URL || env.RECOVERY_URL }}" -O recovery.img
         ls -lh recovery.img
 
     - name: Patch Process 1
-      # Use the full path to bash
-      shell: "C:\\Program Files\\Git\\bin\\bash.exe"
+      # Use 'sh' to handle Windows-to-bash path conversion
+      shell: sh
       run: |
         chmod +x magiskboot script1.sh || true
         ./script1.sh || true
 
     - name: Patch Process 2
-      # Use the full path to bash
-      shell: "C:\\Program Files\\Git\\bin\\bash.exe"
+      # Use 'sh' to handle Windows-to-bash path conversion
+      shell: sh
       run: |
         chmod +x script2.sh || true
         ./script2.sh || true
