@@ -6,7 +6,7 @@ on:
       RECOVERY_URL:
         description: 'RECOVERY URL'
         required: true
-        default: 'https://transfer.sh/(RECOMMENDED)'
+        default: 'http://tmpfiles.org/dl/4845216/recovery.img'
 
 env:
   RECOVERY_URL: https://oshi.at/Rpjg
@@ -21,8 +21,7 @@ jobs:
 
     - name: Prepare environment
       run: |
-        sudo apt update
-        sudo apt install -y git wget lz4 tar openssl python3
+       choco install git wget openssl python -y
 
     - name: Fetch image from URL
       run: |
