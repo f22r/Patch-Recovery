@@ -22,8 +22,7 @@ jobs:
     - name: Prepare environment
       run: |
         sudo apt update
-        sudo apt install -y git wget lz4 tar openssl python3 python3-pip
-        pip install avbtool
+        sudo apt install -y git wget lz4 tar openssl python3
 
     - name: Fetch image from URL
       run: |
@@ -32,6 +31,12 @@ jobs:
         wget "$URL" -O recovery.img --no-check-certificate
         echo "Downloaded file:"
         ls -lh recovery.img
+
+    - name: Install avbtool manually
+      run: |
+        wget https://raw.githubusercontent.com/google/android_platform_external_avb/master/avbtool -O /usr/local/bin/avbtool
+        chmod +x /usr/local/bin/avbtool
+        avbtool version
 
     - name: Patch Process 1
       run: |
@@ -44,8 +49,8 @@ jobs:
         ./script2.sh || true
 
         echo "Generating AVB footer..."
-        python3 avbtool extract_public_key --key phh.pem --output phh.pub.bin
-        python3 avbtool add_hash_footer \
+        avbtool extract_public_key --key phh.pem --output phh.pub.bin
+        avbtool add_hash_footer \
           --partition_name recovery \
           --partition_size $(wc -c < recovery.img) \
           --image recovery-patched.img \
@@ -61,7 +66,3 @@ jobs:
         cd ..
 
     - name: Upload Recovery Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Patched-Recovery
-        path: ./output/*.md5
