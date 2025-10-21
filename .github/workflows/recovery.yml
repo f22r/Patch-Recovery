@@ -6,7 +6,7 @@ on:
       RECOVERY_URL:
         description: 'RECOVERY URL'
         required: true
-        default: 'https://drive.usercontent.google.com/u/0/uc?id=1fkOZEBQIanFTf9D7lonz_gjNROhZjAS7&export=download'
+        default: 'https://drive.usercontent.google.com/download?id=1fkOZEBQIanFTf9D7lonz_gjNROhZjAS7&export=download&authuser=0&confirm=t&uuid=fa319e31-4805-4b33-a40a-e74b59be3ff5&at=AKSUxGP38QkjS9LecQtANt81Lp2Z%3A1761059821392'
 
 env:
   RECOVERY_URL: https://oshi.at/Rpjg
