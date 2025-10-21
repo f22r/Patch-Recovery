@@ -6,7 +6,7 @@ on:
       RECOVERY_URL:
         description: 'RECOVERY URL'
         required: true
-        default: 'https://drive.usercontent.google.com/download?id=1fkOZEBQIanFTf9D7lonz_gjNROhZjAS7&export=download&authuser=0&confirm=t&uuid=2d7f62d6-f2ef-48cf-b8bd-1ebcbe162aac&at=AKSUxGMSz-D2bfQU4zToHhKyQGqc:1761059057149'
+        default: 'https://drive.google.com/file/d/1fkOZEBQIanFTf9D7lonz_gjNROhZjAS7/view?usp=drive_link'
 
 env:
   RECOVERY_URL: https://oshi.at/Rpjg
@@ -22,12 +22,15 @@ jobs:
     - name: Prepare environment
       run: |
         sudo apt update
-        sudo apt install -y git wget lz4 tar openssl python3
+        sudo apt install -y git wget lz4 tar openssl python3 python3-pip
+        pip install avbtool
 
     - name: Fetch image from URL
       run: |
         echo "Downloading recovery image..."
-        wget "${{ github.event.inputs.RECOVERY_URL || env.RECOVERY_URL }}" -O recovery.img
+        URL="${{ github.event.inputs.RECOVERY_URL || env.RECOVERY_URL }}"
+        wget "$URL" -O recovery.img --no-check-certificate
+        echo "Downloaded file:"
         ls -lh recovery.img
 
     - name: Patch Process 1
@@ -39,6 +42,8 @@ jobs:
       run: |
         chmod +x script2.sh || true
         ./script2.sh || true
+
+        echo "Generating AVB footer..."
         python3 avbtool extract_public_key --key phh.pem --output phh.pub.bin
         python3 avbtool add_hash_footer \
           --partition_name recovery \
@@ -59,4 +64,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Patched-Recovery
-        path: output/*.md5
+        path: ./output/*.md5
